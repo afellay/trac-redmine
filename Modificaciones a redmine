@@ -1,0 +1,6 @@
+
+http://www.redmine.org/projects/redmine/repository/revisions/14716/diff/trunk/lib/redmine/field_format.rb?utf8=%E2%9C%93&type=sbs
+En ib/redmine/field_format.rb
+
+view.link_to value.to_s, url
+view.link_to value.to_s.truncate(40), url
