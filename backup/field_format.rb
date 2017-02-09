@@ -339,15 +339,15 @@ module Redmine
           end
           if url =~ /^(\[[a-z]+:\/\/[^ ]+ \d+\])+$/i
             # Formato GDS: "[url1 solidictud1]...[urlN solicitudN]"
-			enlace_multiple = ""
-			enlaces = url.scan(/([a-z]+:\/\/[^ ]+) (\d+)/i)
-            # Devuelve un arreglo de dos niveles:
-            # [ 0 => [url1, solicitud1], ... N-1 => [urlN, solicitudN] ]
-			enlaces.each do |cada_enlace|
-				#cada_enlace.split(' ') {|url, text| view.link_to text, url}
-				enlace_multiple = enlace_multiple + ' <a href="' + cada_enlace[0] + '" target="_blank">' + cada_enlace[1] + '</a>'
-			end
-			view.simple_format(enlace_multiple)
+            enlace_multiple = ""
+            enlaces = url.scan(/([a-z]+:\/\/[^ ]+) (\d+)/i)
+                  # Devuelve un arreglo de dos niveles:
+                  # [ 0 => [url1, solicitud1], ... N-1 => [urlN, solicitudN] ]
+            enlaces.each do |cada_enlace|
+              #cada_enlace.split(' ') {|url, text| view.link_to text, url}
+              enlace_multiple = enlace_multiple + ' <a href="' + cada_enlace[0] + '" target="_blank">' + cada_enlace[1] + '</a>'
+            end
+            view.simple_format(enlace_multiple)
           else
 			# Formato de enlace común (una URL simple)
             view.link_to value.to_s, url
