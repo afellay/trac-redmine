@@ -29,3 +29,5 @@ WHERE
   AND custom_values.value not ilike '%+%'
   AND custom_values.value not ilike '%m%'
   AND custom_values.value not ilike '%:%'
+
+-- BORRAR EL CAMPO CUSTOM ESFUERZO

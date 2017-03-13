@@ -1,4 +1,9 @@
-﻿-- EN DIAGUITA custom_field_id = 7 ES EL CAMPO CUSTOM ESTIMADO
+﻿select value from custom_values 
+	WHERE 
+	  custom_field_id = 7 and value <> '';
+
+/*
+-- EN DIAGUITA custom_field_id = 7 ES EL CAMPO CUSTOM ESTIMADO
 
 update custom_values 
 	  set value = 0
@@ -43,6 +48,7 @@ WHERE
  AND issues.project_id = 18 -- Nro de proyecto 
 
  -- Borrar el custom de redmine si ya se migraron los datos de todos los proyectos 
+ Borrar el compo Estimado
 
- 
+ */
 	 	  

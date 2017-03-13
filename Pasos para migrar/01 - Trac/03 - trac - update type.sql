@@ -7,12 +7,12 @@ UPDATE ticket  SET type= 'Nuevo' WHERE type = 'Operacion Nueva';
 UPDATE ticket_change SET oldvalue= 'Nuevo' WHERE field = 'type' and oldvalue= 'Operacion Nueva';
 UPDATE ticket_change SET newvalue= 'Nuevo' WHERE field = 'type' and newvalue= 'Operacion Nueva';
 
---UPDATE enum  SET name = 'Nuevo' WHERE type = 'ticket_type' and name = 'Libreria';
+
 UPDATE ticket  SET type= 'Nuevo' WHERE type = 'Libreria';
 UPDATE ticket_change SET oldvalue= 'Nuevo' WHERE field = 'type' and oldvalue= 'Libreria';
 UPDATE ticket_change SET newvalue= 'Nuevo' WHERE field = 'type' and newvalue= 'Libreria';
 
---UPDATE enum  SET name = 'Nuevo' WHERE type = 'ticket_type' and name = 'Modulo';
+
 UPDATE ticket  SET type= 'Nuevo' WHERE type = 'Modulo';
 UPDATE ticket_change SET oldvalue= 'Nuevo' WHERE field = 'type' and oldvalue= 'Modulo';
 UPDATE ticket_change SET newvalue= 'Nuevo' WHERE field = 'type' and newvalue= 'Modulo';
@@ -29,10 +29,14 @@ UPDATE ticket_change SET newvalue= 'Bug' WHERE field = 'type' and newvalue= 'def
 
 
 
--- UPDATE enum  SET name = 'Mejora' WHERE type = 'ticket_type' and name = 'Optimizacion'; -- EN ESTA TABLA HAY UN CONSTRAINT 
+
 UPDATE ticket  SET type= 'Mejora' WHERE type = 'Optimizacion';
 UPDATE ticket_change SET oldvalue= 'Mejora' WHERE field = 'type' and oldvalue= 'Optimizacion';
 UPDATE ticket_change SET newvalue= 'Mejora' WHERE field = 'type' and newvalue= 'Optimizacion';
+
+--UPDATE enum  SET name = 'Nuevo' WHERE type = 'ticket_type' and name = 'Libreria';
+--UPDATE enum  SET name = 'Nuevo' WHERE type = 'ticket_type' and name = 'Modulo';
+-- UPDATE enum  SET name = 'Mejora' WHERE type = 'ticket_type' and name = 'Optimizacion'; -- EN ESTA TABLA HAY UN CONSTRAINT ¿no se la corre?
 */
 
 

@@ -1,4 +1,7 @@
-﻿-- Esto se hace al inicio con la base de produccion
+﻿select * FROM trackers 
+
+/*
+-- Esto se hace al inicio con la base de produccion
 
 UPDATE trackers SET  name= 'Nuevo' WHERE name = 'Nueva Funcionalidad';
 
@@ -17,3 +20,4 @@ DELETE FROM trackers WHERE id = 11;
 UPDATE issues  SET  tracker_id= 4 WHERE tracker_id = 10;
 
 DELETE FROM trackers WHERE id = 10;
+*/
