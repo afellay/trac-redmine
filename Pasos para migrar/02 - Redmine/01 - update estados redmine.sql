@@ -16,6 +16,9 @@
  UPDATE issue_statuses SET name = 'Listo Para Cerrar' WHERE name = 'Lista para CERRAR'; 
  UPDATE issue_statuses SET name = 'Listo Para Revisar Codigo' WHERE name = 'Lista para REVISAR CÓDIGO'; 
  UPDATE issue_statuses SET name = 'Nuevo' WHERE name = 'NUEVA (⌂)';
+-- 
+ UPDATE issue_statuses SET name = 'Cerrado' WHERE name = 'closed';
+ UPDATE issue_statuses SET name = 'Nuevo' WHERE name = 'new';
 
 /*
 -- CONSULTAR LOS ESTADOS QUE NO SE UTILIZAN EN EL REDMINE
