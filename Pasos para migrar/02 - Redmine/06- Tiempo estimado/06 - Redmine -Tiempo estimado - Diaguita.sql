@@ -1,6 +1,17 @@
-﻿select value from custom_values 
+﻿-- remaplazar el custom_field_id en los UPDATE y el NRO DE PROYECTO
+
+select distinct
+	custom_values.custom_field_id,
+	custom_fields.name,
+	value
+
+FROM 
+	  custom_fields, 
+	  custom_values
 	WHERE 
-	  custom_field_id = 7 and value <> '';
+	  custom_values.custom_field_id = custom_fields.id 
+	  AND custom_fields.name = 'Estimado'
+	  AND value <> '';
 
 /*
 -- EN DIAGUITA custom_field_id = 7 ES EL CAMPO CUSTOM ESTIMADO
@@ -42,7 +53,7 @@ FROM (SELECT
 	  custom_values
 	WHERE 
 	  custom_values.custom_field_id = custom_fields.id 
-	  AND custom_fields.name = 'Estimado' ) AS subquery
+	  AND custom_fields.name = 'Estimado' AND value <> '') AS subquery
 WHERE 
  issues.id = subquery.customized_id
  AND issues.project_id = 18 -- Nro de proyecto 

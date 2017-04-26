@@ -21,8 +21,7 @@ DELETE FROM issue_statuses
 	  ,public.projects
 	WHERE 
 	  issue_statuses.id = issues.status_id 
-	  AND issues.project_id = projects.id
-  );
+	  AND issues.project_id = projects.id  );
 
 
 */

@@ -483,7 +483,7 @@ namespace :redmine do
 		migrated_custom_values = 0
 		migrated_ticket_attachments = 0
     nomigrated_ticket_attachments = 0
-    #nomigrated_wiki_attachments = 0
+    migrated_severity = 0
 		migrated_wiki_edits = 0
 		migrated_wiki_attachments = 0
 
@@ -507,8 +507,8 @@ namespace :redmine do
 		end
 		puts
 
-		# Priorities
-		print "Migrando prioridades"
+		# Tipos de ticket
+		print "Migrando Tipos de ticket"
 		#Tracker.delete_all
 		TracEnum.find(:all,:conditions => {:type => 'ticket_type'}).each do |ticket_type|
 			print '.'
@@ -589,10 +589,10 @@ namespace :redmine do
 		puts
      
 		# Ticket status
-/		print "Migrando workflow"
+		print "Migrando workflow"
 		WorkflowTransition.delete_all
-/	#	TracTicketChange.find_by_sql("SELECT DISTINCT oldvalue, newvalue FROM #{TracTicketChange.table_name} where field = 'status' and oldvalue <> '' and newvalue <> ''").each do |transicion|
-/		print '.'
+		TracTicketChange.find_by_sql("SELECT DISTINCT oldvalue, newvalue FROM #{TracTicketChange.table_name} where field = 'status' and oldvalue <> '' and newvalue <> ''").each do |transicion|
+		print '.'
 		STDOUT.flush
 			Tracker.find(:all).each do |tracker|
 				Role.find(:all).each do |role|
@@ -606,7 +606,7 @@ namespace :redmine do
 		end
 		puts
     
-/
+
     # Milestones
 		print "Migrando milestones"
 		version_map = {}
@@ -634,8 +634,6 @@ namespace :redmine do
 		end
 		puts
     
-		
-
 		# Custom fields
 		# TODO: read trac.ini instead
 		print "Migrating custom fields"
@@ -671,9 +669,18 @@ namespace :redmine do
 		r.save!
 		custom_field_map['resolution'] = r
     
+    # Severity
+		s = IssueCustomField.find(:first, :conditions => { :name => "Severity" })
+		s = IssueCustomField.new(:name => 'Severity', :field_format => 'list', :is_filter => true) if s.nil?
+		s.trackers = Tracker.find(:all)
+		s.projects << @target_project
+		s.possible_values = (s.possible_values + %w(Deseable Necesario Urgente Impresindible)).flatten.compact.uniq
+		s.save!
+		custom_field_map['severity'] = s
+    
     # Universidad Solicitante
-		u = IssueCustomField.find(:first, :conditions => { :name => "Institución Solicitante" })
-		u = IssueCustomField.new(:name => 'Institución Solicitante', :field_format => 'list', :is_filter => true) if u.nil?
+		u = IssueCustomField.find(:first, :conditions => { :name => "Institucion Solicitante" })
+		u = IssueCustomField.new(:name => 'Institucion Solicitante', :field_format => 'list', :is_filter => true) if u.nil?
 		u.trackers = Tracker.find(:all)
 		u.projects << @target_project
     u.possible_values = (u.possible_values + %w(SIU)).flatten.compact.uniq
@@ -725,6 +732,13 @@ namespace :redmine do
     vr.projects << @target_project
     vr.save!
     custom_field_map['found_in_version'] = vr
+    
+    b = IssueCustomField.find(:first, :conditions => { :name => "boletin" })
+		b = IssueCustomField.new(:name => 'boletin', :field_format => 'string', :is_filter => true) if b.nil? 
+		b.trackers = Tracker.find(:all)
+		b.projects << @target_project
+		b.save!
+		custom_field_map['boletin'] = b
 
 		# Tickets
     print "Migrando tickets: "
@@ -764,71 +778,81 @@ namespace :redmine do
 
 			# Comments and status/resolution changes
     	ticket.changes.group_by(&:time).each do |time, changeset|
-			 #Agrego esto del script Nuevo
-      comment_change = changeset.select {|change| change.field == 'comment'}.first
-      
-      n = Journal.new :notes => (comment_change ? convert_wiki_text(encode(comment_change.newvalue)) : ''),
-                      :created_on => time
-			n.user = find_or_create_user(changeset.first.author)
-			n.journalized = i
+        #Agrego esto del script Nuevo
+        comment_change = changeset.select {|change| change.field == 'comment'}.first
+        # Severity
+        severity_change = changeset.select { |change| change.field == 'severity' }.first
 
-			changeset.each do |change|
-				if(change.field == 'comment')
-					n.notes = convert_wiki_text(encode(change.newvalue))
-				end
-				if (
-					change.field == 'status' &&
-					STATUS_MAPPING[change.oldvalue] &&
-					STATUS_MAPPING[change.newvalue] &&
-					(STATUS_MAPPING[change.oldvalue] != STATUS_MAPPING[change.newvalue])
-					)
-					n.details << JournalDetail.new(
-						:property => 'attr',
-						:prop_key => 'status_id',
-						:old_value => STATUS_MAPPING[change.oldvalue].id,
-						:value => STATUS_MAPPING[change.newvalue].id
-						)
-				end
-				if change.field == 'resolution' &&
-					n.details << JournalDetail.new(
-						:property => 'cf',
-						:prop_key => custom_field_map['resolution'].id,
-						:old_value => change.oldvalue,
-						:value => change.newvalue
-						)
-				end
-        if change.field == 'Ticket Migrado' &&
-					n.details << JournalDetail.new(
-						:property => 'cf',
-						:prop_key => custom_field_map['Ticket Migrado'].id,
-						:old_value => change.oldvalue,
-						:value => change.newvalue
-						)
-				end
+        n = Journal.new :notes => (comment_change ? convert_wiki_text(encode(comment_change.newvalue)) : ''),
+                        :created_on => time
+        n.user = find_or_create_user(changeset.first.author)
+        n.journalized = i
+        
+        # Severity
+        if severity_change
+          n.details << JournalDetail.new(:property => 'cf',
+                                         :prop_key => custom_field_map['severity'].id,
+                                         :old_value => severity_change.oldvalue,
+                                         :value => severity_change.newvalue)
+        end
 
-				if(change.field != 'status' &&change.field != 'resolution' && change.field != 'comment' && change.field != 'Ticket Migrado') # && change.field != 'GDS')
-					if(custom_field_map.include? change.field)
-						n.details << JournalDetail.new(:property => 'cf',
-									:prop_key => custom_field_map[change.field].id,
-									:old_value => change.oldvalue,
-									:value => change.newvalue)
-					else
-						if(change.field == 'owner')
+        changeset.each do |change|
+          if(change.field == 'comment')
+            n.notes = convert_wiki_text(encode(change.newvalue))
+          end
+          if (
+            change.field == 'status' &&
+            STATUS_MAPPING[change.oldvalue] &&
+            STATUS_MAPPING[change.newvalue] &&
+            (STATUS_MAPPING[change.oldvalue] != STATUS_MAPPING[change.newvalue])
+            )
+            n.details << JournalDetail.new(
+              :property => 'attr',
+              :prop_key => 'status_id',
+              :old_value => STATUS_MAPPING[change.oldvalue].id,
+              :value => STATUS_MAPPING[change.newvalue].id
+              )
+          end
+          if change.field == 'resolution' &&
+            n.details << JournalDetail.new(
+              :property => 'cf',
+              :prop_key => custom_field_map['resolution'].id,
+              :old_value => change.oldvalue,
+              :value => change.newvalue
+              )
+          end
+          if change.field == 'Ticket Migrado' &&
+            n.details << JournalDetail.new(
+              :property => 'cf',
+              :prop_key => custom_field_map['Ticket Migrado'].id,
+              :old_value => change.oldvalue,
+              :value => change.newvalue
+              )
+          end
 
-							n.details << JournalDetail.new(:property => 'attr',
-										:prop_key => 'assigned_to_id',
-										:old_value => find_or_create_user(change.oldvalue),
-										:value => find_or_create_user(change.newvalue))
-						else
-							n.details << JournalDetail.new(:property => 'attr',
-										:prop_key => change.field,
-										:old_value => change.oldvalue,
-										:value => change.newvalue)
-						end
-					end
-				end
-			end
-			n.save unless n.details.empty? && n.notes.blank?
+          if(change.field != 'status' &&change.field != 'resolution' && change.field != 'comment' && change.field != 'Ticket Migrado') # && change.field != 'GDS')
+            if(custom_field_map.include? change.field)
+              n.details << JournalDetail.new(:property => 'cf',
+                    :prop_key => custom_field_map[change.field].id,
+                    :old_value => change.oldvalue,
+                    :value => change.newvalue)
+            else
+              if(change.field == 'owner')
+
+                n.details << JournalDetail.new(:property => 'attr',
+                      :prop_key => 'assigned_to_id',
+                      :old_value => find_or_create_user(change.oldvalue),
+                      :value => find_or_create_user(change.newvalue))
+              else
+                n.details << JournalDetail.new(:property => 'attr',
+                      :prop_key => change.field,
+                      :old_value => change.oldvalue,
+                      :value => change.newvalue)
+              end
+            end
+          end
+        end
+        n.save unless n.details.empty? && n.notes.blank?
 			end
 
 			# Attachments
@@ -885,6 +909,10 @@ namespace :redmine do
       if custom_field_map['Ticket Migrado'] 
 		 		custom_values[custom_field_map['Ticket Migrado'].id] = "[http://repositorio.siu.edu.ar/trac/diaguita/ticket/#{ticket.id} #{ticket.id}]"
 		 	end
+      # Severity
+      if custom_field_map['severity'] && !ticket.severity.blank?
+        custom_values[custom_field_map['severity'].id] = ticket.severity
+      end
       
 
       if !ticket.version.blank? && custom_field_map['found_in_version']
@@ -971,6 +999,7 @@ namespace :redmine do
 		puts "Priorities:      #{migrated_priorities}"
 		puts "Statuses:        #{migrated_statuses}"
 		puts "Ticket Type:     #{migrated_ticket_types}"
+    puts "Migrate Severity:#{migrated_severity}"
 		puts "Milestones:      #{migrated_milestones}/#{TracMilestone.count}"
   # puts "Milestones:      #{migrated_version}/#{TracVersion.count}"
 		puts "Tickets:         #{migrated_tickets}/#{TracTicket.count}"
@@ -1146,7 +1175,7 @@ namespace :redmine do
 		unless %w(sqlite sqlite3).include?(TracMigrate.trac_adapter)
 			prompt(' - host', :default => 'localhost') {|host| TracMigrate.set_trac_db_host host}
 			prompt(' - port', :default => DEFAULT_PORTS[TracMigrate.trac_adapter]) {|port| TracMigrate.set_trac_db_port port}
-			prompt(' - base', :default => 'trac_diaguita') {|name| TracMigrate.set_trac_db_name name}
+			prompt(' - base', :default => 'trac_diaguita2') {|name| TracMigrate.set_trac_db_name name}
 			prompt(' - schema', :default => 'public') {|schema| TracMigrate.set_trac_db_schema schema}
 			prompt(' - usuario', :default => 'afellay') {|username| TracMigrate.set_trac_db_username username}
 			prompt(' - clave', :default => 'sarasa') {|password| TracMigrate.set_trac_db_password password}
