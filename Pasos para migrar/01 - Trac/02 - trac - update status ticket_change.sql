@@ -7,10 +7,19 @@ UPDATE ticket SET status= 'Nuevo' WHERE status= 'new';
 UPDATE ticket SET status= 'En Documentacion' WHERE status= 'EnDocumentacion';
 UPDATE ticket SET status= 'Listo Para Testeo' WHERE status= 'ListoParaTesteo';
 UPDATE ticket SET status= 'Listo Para Desarrollo' WHERE status= 'ListoParaDesarrollo';
+UPDATE ticket SET status= 'Listo Para Analisis' WHERE status= 'ListoAnalisis';
+UPDATE ticket SET status= 'Listo Para Analisis' WHERE status= 'PendienteRespuesta';
 UPDATE ticket SET status= 'En Analisis' WHERE status= 'EnAnalisis';
 UPDATE ticket SET status= 'En Testeo' WHERE status= 'EnTesteo';
 UPDATE ticket SET status= 'En Desarrollo' WHERE status= 'EnDesarrollo';
 UPDATE ticket SET status= 'Listo Para Documentacion' WHERE status= 'ListoParaDocumentacion';
+UPDATE ticket SET status= 'Listo Para Documentacion' WHERE status= 'ListoParaDocumentar';
+UPDATE ticket SET status= 'Cerrado' WHERE status= 'Rechazado';
+UPDATE ticket SET status= 'Cerrado' WHERE status= 'Respondido';
+-- UPDATE ticket SET status= 'Incluido En Version' WHERE status= 'IncluidoEnVersion';
+-- UPDATE ticket SET status= 'Listo Para Versionar' WHERE status= 'ListoParaVersionar';
+UPDATE ticket SET status= 'Listo Para Documentacion' WHERE status= 'ListoParaVersionar';
+UPDATE ticket SET status= 'Cerrado' WHERE status= 'IncluidoEnVersion';
 
 
 UPDATE ticket_change SET oldvalue= 'En Analisis' WHERE field = 'status' and oldvalue= 'EnAn�lisis';
@@ -64,9 +73,30 @@ UPDATE ticket_change SET oldvalue= 'Nuevo' WHERE field = 'status' and oldvalue= 
 UPDATE ticket_change SET newvalue= 'Nuevo' WHERE field = 'status' and newvalue= 'reopened';
 UPDATE ticket_change SET oldvalue= 'Nuevo' WHERE field = 'status' and oldvalue= 'new';
 UPDATE ticket_change SET newvalue= 'Nuevo' WHERE field = 'status' and newvalue= 'new';
+UPDATE ticket_change SET oldvalue= 'Nuevo' WHERE field = 'status' and oldvalue= 'RequiereInformacion';
+UPDATE ticket_change SET newvalue= 'Nuevo' WHERE field = 'status' and newvalue= 'RequiereInformacion';
 
+-- UPDATE ticket_change  SET oldvalue= 'Incluido En Version' WHERE field = 'status' and oldvalue= 'IncluidoEnVersion';
+-- UPDATE ticket_change  SET newvalue= 'Incluido En Version' WHERE field = 'status' and newvalue= 'IncluidoEnVersion';
+
+-- UPDATE ticket_change  SET oldvalue= 'Listo Para Versionar' WHERE field = 'status' and oldvalue= 'ListoParaVersionar';
+-- UPDATE ticket_change  SET newvalue= 'Listo Para Versionar' WHERE field = 'status' and newvalue= 'ListoParaVersionar';
+
+UPDATE ticket_change  SET oldvalue= 'Cerrado' WHERE field = 'status' and oldvalue= 'IncluidoEnVersion';
+UPDATE ticket_change  SET newvalue= 'Cerrado' WHERE field = 'status' and newvalue= 'IncluidoEnVersion';
+
+UPDATE ticket_change  SET oldvalue= 'Listo Para Documentacion' WHERE field = 'status' and oldvalue= 'ListoParaVersionar';
+UPDATE ticket_change  SET newvalue= 'Listo Para Documentacion' WHERE field = 'status' and newvalue= 'ListoParaVersionar';
+
+
+UPDATE ticket_change SET oldvalue= 'Listo Para Analisis' WHERE field = 'status' and oldvalue= 'PendienteAprobacion';
+UPDATE ticket_change SET newvalue= 'Listo Para Analisis' WHERE field = 'status' and newvalue= 'PendienteAprobacion';
 
 UPDATE ticket_change SET oldvalue= 'Cerrado' WHERE field = 'status' and oldvalue= 'closed';
 UPDATE ticket_change SET newvalue= 'Cerrado' WHERE field = 'status' and newvalue= 'closed';
+UPDATE ticket_change SET oldvalue= 'Cerrado' WHERE field = 'status' and oldvalue= 'Rechazado';
+UPDATE ticket_change SET newvalue= 'Cerrado' WHERE field = 'status' and newvalue= 'Rechazado';
+UPDATE ticket_change SET oldvalue= 'Cerrado' WHERE field = 'status' and oldvalue= 'Respondido';
+UPDATE ticket_change SET newvalue= 'Cerrado' WHERE field = 'status' and newvalue= 'Respondido';
 
 */

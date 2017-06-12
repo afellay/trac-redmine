@@ -30,7 +30,7 @@ WHERE
   custom_fields.id = custom_values.custom_field_id AND
   issues.id = custom_values.customized_id AND
   custom_fields.name = 'Tiempo r'  
-  AND issues.project_id = 90 -- CAMBIAR EL NRO DE PROYECTO
+  AND issues.project_id = 19 -- CAMBIAR EL NRO DE PROYECTO
   AND custom_values.value <> ''
 --  AND custom_values.value not ilike '%,%'
 --  AND custom_values.value not ilike '%+%'

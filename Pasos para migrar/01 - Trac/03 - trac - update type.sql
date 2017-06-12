@@ -1,4 +1,5 @@
 ﻿select * from enum WHERE type = 'ticket_type'
+select distinct TYPE from ticket;
 
 /*
 -- Diguita -- 

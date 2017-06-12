@@ -22,10 +22,12 @@ FROM (SELECT
 	  custom_values
 	WHERE 
 	  custom_values.custom_field_id = custom_fields.id 
-	  AND custom_fields.name = 'Tiempo' ) AS subquery
+	  AND custom_fields.name = 'Tiempo'
+	   AND custom_values.value <> '' ) AS subquery
 WHERE 
  issues.id = subquery.customized_id
- AND issues.project_id = 90 -- Nro de proyecto 
+ AND issues.project_id = 19 -- Nro de proyecto 
+ 
 
  -- Borrar el custom de redmine si ya se migraron los datos de todos los proyectos 
 

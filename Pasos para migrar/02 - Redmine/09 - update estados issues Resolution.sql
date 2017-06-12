@@ -1,4 +1,7 @@
-﻿-- SELECT id FROM issue_statuses WHERE name = 'Cerrado';
+﻿-- Esto es para diaguita ??
+
+
+-- SELECT id FROM issue_statuses WHERE name = 'Cerrado';
 
 UPDATE issues 
 SET status_id =  estado
@@ -19,7 +22,7 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 18;
+  AND issues.project_id = 103;
 
 -- SELECT id FROM issue_statuses WHERE name = 'Duplicado';
 
@@ -42,7 +45,7 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 18;
+  AND issues.project_id = 103;
 
 
 
