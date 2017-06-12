@@ -558,10 +558,10 @@ namespace :redmine do
       
       if !IssueStatus.where(:name => status.oldvalue).exists? # CONTROLA QUE NO EXISTA EN LA DB
         c = IssueStatus.new :name => encode(status.oldvalue[0, limit_for(IssueStatus, 'name')])
-        if(status.oldvalue == 'new')
+        if(status.oldvalue == 'Nuevo')
           c.is_default = 't'
         end
-        if(status.oldvalue == 'closed')
+        if(status.oldvalue == 'Cerrado')
           c.is_closed = 't'
         end
 
@@ -606,7 +606,6 @@ namespace :redmine do
 		end
 		puts
     
-
     # Milestones
 		print "Migrando milestones"
 		version_map = {}
@@ -644,13 +643,41 @@ namespace :redmine do
 			# Redmine custom field name
 			field_name = encode(field.name[0, limit_for(IssueCustomField, 'name')]).humanize
 			# Find if the custom already exists in Redmine
+			
+      print "Nombre de field_name [#{field_name}]"
+
+      filter = true
+      
+      if field_name == 'Boletin'
+        format = 'text'
+        filter = false
+   /   elsif field_name == 'nota_testeo' # Esto es de G2
+        field_name = 'Notas para Testeo'
+        format = 'text'
+        filter = false
+      elsif field_name == 'nota_int' # Esto es de G2
+        field_name = 'Notas Internas'
+        format = 'text'
+        filter = false  
+      elsif field_name == 'Nota obj' # Esto es de G2
+        field_name = 'Obj a catalogar'
+        format = 'text'
+        filter = false
+  /
+      elsif field_name == 'Operacion' # Esto es de G2
+        format = 'list'
+        filter = false
+      else  
+        format = 'string'
+      end
 			f = IssueCustomField.find_by_name(field_name)
       #print "Nombre de field_name [#{field_name}]"
      
 			# Or create a new one
 			f ||= IssueCustomField.create(
 					:name => encode(field.name[0, limit_for(IssueCustomField, 'name')]).humanize, 
-					:field_format => 'string'
+					:field_format => format,
+          :is_filter => filter
 					)
 
 			next if f.new_record?
@@ -658,32 +685,64 @@ namespace :redmine do
 			f.projects << @target_project
 			custom_field_map[field.name] = f
 		end
+	### SI EL CAMPO ES DE TIPO LISTA HAY QUE AGREGARLO ABAJO, PARA DEFINIRLE POSIBLES VALORES, CASO CONTRARIO SOLAMENTE ARRIBA	
+  #
+    no = IssueCustomField.find(:first, :conditions => { :name => 'Obj a catalogar' })
+		no = IssueCustomField.new(:name => 'Obj a catalogar', :field_format => 'text', :is_filter => false) if no.nil? 
+		no.trackers = Tracker.find(:all)
+		no.projects << @target_project
+		no.save!
+		custom_field_map['nota_obj'] = no
 		
+    nt = IssueCustomField.find(:first, :conditions => { :name => "Notas para Testeo" })
+		nt = IssueCustomField.new(:name => 'Notas para Testeo', :field_format => 'text', :is_filter => true) if nt.nil? 
+		nt.trackers = Tracker.find(:all)
+		nt.projects << @target_project
+		nt.save!
+		custom_field_map['nota_testeo'] = nt
 
+    ni = IssueCustomField.find(:first, :conditions => { :name => "Notas Internas" })
+		ni = IssueCustomField.new(:name => 'Notas Internas', :field_format => 'text', :is_filter => true) if ni.nil? 
+		ni.trackers = Tracker.find(:all)
+		ni.projects << @target_project
+		ni.save!
+		custom_field_map['nota_int'] = ni
+    
 		# Trac 'resolution' field as a Redmine custom field
-		r = IssueCustomField.find(:first, :conditions => { :name => "Resolution" })
-		r = IssueCustomField.new(:name => 'Resolution', :field_format => 'list', :is_filter => true) if r.nil?
-		r.trackers = Tracker.find(:all)
-		r.projects << @target_project
-		r.possible_values = (r.possible_values + %w(fixed invalido wontfix duplicado worksforme)).flatten.compact.uniq
-		r.save!
-		custom_field_map['resolution'] = r
+		p = IssueCustomField.find(:first, :conditions => { :name => "Perfil" })
+		p = IssueCustomField.new(:name => 'Perfil', :field_format => 'list', :is_filter => true) if p.nil?
+		p.trackers = Tracker.find(:all)
+		p.projects << @target_project
+		p.possible_values = (p.possible_values + %w(Gestion)).flatten.compact.uniq
+		p.save!
+		custom_field_map['perfiles_sol'] = p
     
     # Severity
-		s = IssueCustomField.find(:first, :conditions => { :name => "Severity" })
-		s = IssueCustomField.new(:name => 'Severity', :field_format => 'list', :is_filter => true) if s.nil?
+		s = IssueCustomField.find(:first, :conditions => { :name => "Gravedad" })
+		s = IssueCustomField.new(:name => 'Gravedad', :field_format => 'list', :is_filter => true) if s.nil?
 		s.trackers = Tracker.find(:all)
 		s.projects << @target_project
 		s.possible_values = (s.possible_values + %w(Deseable Necesario Urgente Impresindible)).flatten.compact.uniq
 		s.save!
 		custom_field_map['severity'] = s
     
+    
+		# Trac 'resolution' field as a Redmine custom field
+		r = IssueCustomField.find(:first, :conditions => { :name => "Resolution" })
+		r = IssueCustomField.new(:name => 'Resolution', :field_format => 'list', :is_filter => true) if r.nil?
+		r.trackers = Tracker.find(:all)
+		r.projects << @target_project
+		r.possible_values = (r.possible_values + %w(Duplicado)).flatten.compact.uniq
+		r.save!
+		custom_field_map['resolution'] = r
+ 
+    
     # Universidad Solicitante
 		u = IssueCustomField.find(:first, :conditions => { :name => "Institucion Solicitante" })
 		u = IssueCustomField.new(:name => 'Institucion Solicitante', :field_format => 'list', :is_filter => true) if u.nil?
 		u.trackers = Tracker.find(:all)
 		u.projects << @target_project
-    u.possible_values = (u.possible_values + %w(SIU)).flatten.compact.uniq
+    u.possible_values = (u.possible_values + %w(SIU)).flatten.compact.uniq #ESTO SE PODRA AGREGAR ARRIBA?
 		u.save!
     custom_field_map['univ_solicitante'] = u
     
@@ -695,15 +754,15 @@ namespace :redmine do
 		g.save!
 		custom_field_map['gds_solicitudes'] = g
     
-    d = IssueCustomField.find(:first, :conditions => { :name => "Rev desarrollo" })
-		d = IssueCustomField.new(:name => 'Rev desarrollo', :field_format => 'link', :is_filter => true) if d.nil? 
+    d = IssueCustomField.find(:first, :conditions => { :name => "Revision desarrollo" })
+		d = IssueCustomField.new(:name => 'Revision desarrollo', :field_format => 'link', :is_filter => false) if d.nil? 
 		d.trackers = Tracker.find(:all)
 		d.projects << @target_project
 		d.save!
 		custom_field_map['revision_desa'] = d
     
-    t = IssueCustomField.find(:first, :conditions => { :name => "Rev Test" })
-		t = IssueCustomField.new(:name => 'Rev Test', :field_format => 'link', :is_filter => true) if t.nil? 
+    t = IssueCustomField.find(:first, :conditions => { :name => "Revision Test" })
+		t = IssueCustomField.new(:name => 'Revision Test', :field_format => 'link', :is_filter => false) if t.nil? 
 		t.trackers = Tracker.find(:all)
 		t.projects << @target_project
 		t.save!
@@ -726,24 +785,15 @@ namespace :redmine do
     vr = IssueCustomField.find(:first, :conditions => { :name => "Version de Referencia" })
     vr = IssueCustomField.new(:name => 'Version de Referencia',:field_format => 'version',:is_filter => true) if vr.nil?
     vr.trackers = Tracker.find(:all)
-    #v.trackers << TRACKER_BUG
-    #v.trackers << [TRACKER_BUG, TRACKER_FEATURE]
-    # Affect custom field to current Project
     vr.projects << @target_project
     vr.save!
     custom_field_map['found_in_version'] = vr
     
-    b = IssueCustomField.find(:first, :conditions => { :name => "boletin" })
-		b = IssueCustomField.new(:name => 'boletin', :field_format => 'string', :is_filter => true) if b.nil? 
-		b.trackers = Tracker.find(:all)
-		b.projects << @target_project
-		b.save!
-		custom_field_map['boletin'] = b
 
 		# Tickets
     print "Migrando tickets: "
-		TracTicket.find_each(:batch_size => 200) do |ticket|
-    #TracTicket.find(:all).each do |ticket|
+		#TracTicket.find_each(:batch_size => 200) do |ticket|
+    TracTicket.find(:all).each do |ticket|
 			print '.'
 			STDOUT.flush
 			i = Issue.new :project => @target_project,
@@ -830,7 +880,7 @@ namespace :redmine do
               )
           end
 
-          if(change.field != 'status' &&change.field != 'resolution' && change.field != 'comment' && change.field != 'Ticket Migrado') # && change.field != 'GDS')
+          if(change.field != 'status' &&change.field != 'resolution' && change.field != 'comment' && change.field != 'Ticket Migrado' && change.field != 'GDS')
             if(custom_field_map.include? change.field)
               n.details << JournalDetail.new(:property => 'cf',
                     :prop_key => custom_field_map[change.field].id,
@@ -890,7 +940,7 @@ namespace :redmine do
           #revision = custom.value
           #revision = revision.gsub('[','').gsub(']','')
           revision = custom.value.gsub('[','').gsub(']','').gsub(/(\d+)/) do |s|
-            "[https://repositorio.siu.edu.ar/trac/diaguita/changeset/#{s} #{s}]#{revision}".gsub('].',']')
+            "[https://repositorio.siu.edu.ar/trac/guarani3w/changeset/#{s} #{s}]#{revision}".gsub('].',']')
           end
           h[custom_field.id] = revision.gsub('] ',']').gsub(' [','[').gsub(' ,','').gsub(', ','').gsub(',','').gsub('-','')
           STDOUT.flush
@@ -907,7 +957,7 @@ namespace :redmine do
 			end
       # Guarda el link del ticket (del trac) de donde se migro
       if custom_field_map['Ticket Migrado'] 
-		 		custom_values[custom_field_map['Ticket Migrado'].id] = "[http://repositorio.siu.edu.ar/trac/diaguita/ticket/#{ticket.id} #{ticket.id}]"
+		 		custom_values[custom_field_map['Ticket Migrado'].id] = "[http://repositorio.siu.edu.ar/trac/guarani3w/ticket/#{ticket.id} #{ticket.id}]"
 		 	end
       # Severity
       if custom_field_map['severity'] && !ticket.severity.blank?
@@ -1170,18 +1220,18 @@ namespace :redmine do
 
 		DEFAULT_PORTS = {'mysql' => 3306, 'postgresql' => 5432}
 
-		prompt('Ruta de Trac', :default => '/var/trac/diaguita') {|directory| TracMigrate.set_trac_directory directory.strip}
+		prompt('Ruta de Trac', :default => '/var/trac/guarani3w') {|directory| TracMigrate.set_trac_directory directory.strip}
 		prompt('Conector a la base de Trac (sqlite, sqlite3, mysql, postgresql)', :default => 'postgresql') {|adapter| TracMigrate.set_trac_adapter adapter}
 		unless %w(sqlite sqlite3).include?(TracMigrate.trac_adapter)
 			prompt(' - host', :default => 'localhost') {|host| TracMigrate.set_trac_db_host host}
 			prompt(' - port', :default => DEFAULT_PORTS[TracMigrate.trac_adapter]) {|port| TracMigrate.set_trac_db_port port}
-			prompt(' - base', :default => 'trac_diaguita2') {|name| TracMigrate.set_trac_db_name name}
+			prompt(' - base', :default => 'trac_guarani3w') {|name| TracMigrate.set_trac_db_name name}
 			prompt(' - schema', :default => 'public') {|schema| TracMigrate.set_trac_db_schema schema}
 			prompt(' - usuario', :default => 'afellay') {|username| TracMigrate.set_trac_db_username username}
 			prompt(' - clave', :default => 'sarasa') {|password| TracMigrate.set_trac_db_password password}
 		end
 		prompt(' - codificacion', :default => 'UTF-8') {|encoding| TracMigrate.encoding encoding}
-		prompt(' - identificador del proyecto', :default => 'diaguita') {|identifier| TracMigrate.target_project_identifier identifier}
+		prompt(' - identificador del proyecto', :default => 'guarani3w') {|identifier| TracMigrate.target_project_identifier identifier}
 		puts
 		puts
 
