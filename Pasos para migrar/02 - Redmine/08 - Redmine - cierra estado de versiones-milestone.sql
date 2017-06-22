@@ -2,6 +2,6 @@
 
 UPDATE versions
    SET  status= 'closed'
- WHERE project_id = 19 and effective_date is not null;
+ WHERE project_id = 52 and effective_date is not null;
 
 -- PONER EL ID DE
