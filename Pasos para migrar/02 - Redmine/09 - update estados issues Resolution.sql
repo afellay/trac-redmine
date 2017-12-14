@@ -22,7 +22,7 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 52;
+  AND issues.project_id = 36;
 
 -- SELECT id FROM issue_statuses WHERE name = 'Duplicado';
 
@@ -45,10 +45,10 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 52;
+  AND issues.project_id = 36;
 
 
-/*
+/* Para Servicio y Extranet correrlo
 -- HAY QUE VER SI HAY MAS DE UN ESTADO Cerrado
 
 UPDATE issues 
@@ -70,5 +70,5 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 38;
+  AND issues.project_id = 36;
 */

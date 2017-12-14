@@ -26,7 +26,7 @@ FROM (SELECT
 	   AND custom_values.value <> '' ) AS subquery
 WHERE 
  issues.id = subquery.customized_id
- AND issues.project_id = 19 -- Nro de proyecto 
+ AND issues.project_id = 31 -- Nro de proyecto 
  
 
  -- Borrar el custom de redmine si ya se migraron los datos de todos los proyectos 

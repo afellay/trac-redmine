@@ -220,6 +220,10 @@ namespace :redmine do
               "%23"
             when 44 ##
               "%2C"
+            when 45 #-
+              "%2D"
+            when 211 #Ó
+              "%C3%93"
             when 225 #á
               "%C3%A1"
             when 193 #Á
@@ -234,6 +238,8 @@ namespace :redmine do
               "%C3%AD"
             when 241 #ñ
               "%C3%B1"
+            when 8211 #
+              "%E2%80%93"
             when 32             
             sprintf('%%%02x', codepoint)
             else
@@ -552,7 +558,8 @@ namespace :redmine do
 		# Ticket status
 		print "Migrating ticket status"
 		#IssueStatus.delete_all
-		TracTicketChange.find_by_sql("SELECT DISTINCT oldvalue FROM #{TracTicketChange.table_name} where field = 'status'").each do |status|
+		TracTicketChange.find_by_sql("SELECT DISTINCT oldvalue FROM #{TracTicketChange.table_name} where (field = 'estado' or field = 'status') and oldvalue <> ''").each do |status|
+
 			print '.'
 			STDOUT.flush
       
@@ -574,7 +581,7 @@ namespace :redmine do
       migrated_statuses += 1 # HAY QUE EVALUAR SI SE TIENEN QUE CONTABILIZAR CUANDO YA EXISTE
     end
 
-		TracTicketChange.find_by_sql("SELECT DISTINCT newvalue FROM #{TracTicketChange.table_name} where field = 'status'").each do |status|
+		TracTicketChange.find_by_sql("SELECT DISTINCT newvalue FROM #{TracTicketChange.table_name} where (field = 'estado' or field = 'status')").each do |status|
 			print '.'
 			STDOUT.flush
 			if(STATUS_MAPPING[status.newvalue])
