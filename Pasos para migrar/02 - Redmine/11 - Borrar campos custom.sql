@@ -99,14 +99,14 @@ DELETE FROM custom_fields_projects
  --Tiempo r
  DELETE FROM custom_fields_projects
  WHERE custom_field_id = (Select id FROM custom_fields
- WHERE name = ' Tiempo r');
+ WHERE name = 'Tiempo r');
 
  DELETE FROM custom_fields_trackers
  WHERE custom_field_id = (Select id FROM custom_fields
- WHERE name = ' Tiempo r');
+ WHERE name = 'Tiempo r');
 
  DELETE FROM custom_fields
- WHERE name = ' Tiempo r';
+ WHERE name = 'Tiempo r';
  
  --Nota int
  DELETE FROM custom_fields_projects
@@ -157,7 +157,7 @@ DELETE FROM custom_fields_projects
  WHERE name = 'Nota testeo';
  
 
-
+/*
  --Version Sol
  DELETE FROM custom_fields_projects
  WHERE custom_field_id = (Select id FROM custom_fields
@@ -168,4 +168,4 @@ DELETE FROM custom_fields_projects
  WHERE name = 'Version Sol');
 
  DELETE FROM custom_fields
- WHERE name = 'Version Sol';
+ WHERE name = 'Version Sol';*/

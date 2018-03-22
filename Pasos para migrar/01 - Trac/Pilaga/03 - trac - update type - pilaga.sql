@@ -47,5 +47,8 @@ UPDATE ticket_change SET newvalue= 'Mejora' WHERE field = 'type' and newvalue= '
 DELETE FROM enum WHERE type = 'ticket_type' and name = 'Pedidos de Auditoria (SIGEN)'; 
 
 
-
+UPDATE ticket  SET type= 'tarea' WHERE type = 'task';
+--UPDATE ticket_change SET oldvalue= 'Mejora' WHERE field = 'type' and oldvalue= 'Optimización de código';
+--UPDATE ticket_change SET newvalue= 'Mejora' WHERE field = 'type' and newvalue= 'Optimización de código';
+DELETE FROM enum WHERE type = 'tarea' and name = 'task'; 
 

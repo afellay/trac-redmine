@@ -22,7 +22,7 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 36;
+  AND issues.project_id = 41;
 
 -- SELECT id FROM issue_statuses WHERE name = 'Duplicado';
 
@@ -45,7 +45,7 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 36;
+  AND issues.project_id = 41;
 
 
 /* Para Servicio y Extranet correrlo
@@ -70,5 +70,5 @@ SELECT
 	) AS subquery
 WHERE 
   issues.id = subquery.customized_id
-  AND issues.project_id = 36;
+  AND issues.project_id = 41;
 */

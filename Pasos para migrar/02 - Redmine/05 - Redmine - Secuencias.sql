@@ -41,6 +41,7 @@ SELECT setval('public.issue_categories_id_seq',(SELECT coalesce(max(id), 1) FROM
 SELECT setval('public.issue_relations_id_seq',(SELECT coalesce(max(id), 1) FROM public.issue_relations));
 SELECT setval('public.issue_statuses_id_seq',(SELECT coalesce(max(id), 1) FROM public.issue_statuses));
 SELECT setval('public.issues_id_seq',(SELECT coalesce(max(id), 1) FROM public.issues));
+--SELECT setval('public.issues_id_seq',(11000));
 SELECT setval('public.journal_details_id_seq',(SELECT coalesce(max(id), 1) FROM public.journal_details));
 SELECT setval('public.journals_id_seq',(SELECT coalesce(max(id), 1) FROM public.journals));
 SELECT setval('public.member_roles_id_seq',(SELECT coalesce(max(id), 1) FROM public.member_roles));
