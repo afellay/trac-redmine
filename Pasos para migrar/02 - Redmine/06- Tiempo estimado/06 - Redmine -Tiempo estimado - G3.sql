@@ -17,7 +17,7 @@ WHERE
 	WHERE 
 	  custom_values.custom_field_id = custom_fields.id 
 	  AND custom_fields.name = 'Tiempo'
-	   AND custom_values.value <> '' 
+	   AND custom_values.value <> '' ;
 
  
  /*
@@ -197,7 +197,7 @@ FROM (SELECT
 	   AND custom_values.value <> '' ) AS subquery
 WHERE 
  issues.id = subquery.customized_id
- AND issues.project_id = 41 -- Nro de proyecto 
+ AND issues.project_id = 53 -- Nro de proyecto 
 
  
 */

@@ -22,6 +22,25 @@ WHERE
  /*
  -- EN DIAGUITA custom_field_id = 7 ES EL CAMPO CUSTOM ESTIMADO
 
+ 
+update custom_values 
+	  set value = 70
+	WHERE 
+	  custom_field_id = (Select id
+		FROM 
+		custom_fields
+		WHERE 		 custom_fields.name = 'Tiempo r')
+	  AND (value is null or value = '10 días');
+
+ update custom_values 
+	  set value = 8.5
+	WHERE 
+	  custom_field_id = (Select id
+		FROM 
+		custom_fields
+		WHERE 		 custom_fields.name = 'Tiempo r')
+	  AND (value = '8,5');
+
 update custom_values 
 	  set value = 0
 	WHERE 
@@ -134,7 +153,7 @@ WHERE
   custom_fields.id = custom_values.custom_field_id AND
   issues.id = custom_values.customized_id AND
   custom_fields.name = 'Tiempo r'  
-  AND issues.project_id = 41 -- CAMBIAR EL NRO DE PROYECTO
+  AND issues.project_id = 53 -- CAMBIAR EL NRO DE PROYECTO
   AND custom_values.value <> ''
 --  AND custom_values.value not ilike '%,%'
 --  AND custom_values.value not ilike '%+%'
